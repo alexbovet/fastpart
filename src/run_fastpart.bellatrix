@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=16
+#PBS -l walltime=23:00:00
+#PBS -l place=shared
+#
+#PBS -j oe
+
+
+# name of the executable
+EXEC=fastpart
+
+RUNID=${INPUT#*.}
+
+WK=/scratch/$USER/runs/nphys/E70eV/$(basename $PBS_O_WORKDIR).$PBS_JOBID
+mkdir -p $WK
+cp -p $PBS_O_WORKDIR/* $WK/
+cd $WK
+
+module load intel/13.0.1 hdf5/1.8.10-patch1_intel_mvapich2-4.7.2_1.8.1 mpich2/1.4.1p1-intel-13.0.1 
+
+mpirun ./$EXEC < in.$RUNID > out.$RUNID
+
+echo hostname : $HOSTNAME >> out.$RUNID
+
+#rsync -av . $PBS_O_WORKDIR/
+
+

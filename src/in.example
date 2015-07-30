@@ -1,0 +1,74 @@
+bovets1_T150B ! job name
+! This input file for fastpart is based on the skeleton code created by Minh Tran and Stephan Brunner.
+=========================================
+fastpart Gustafson Ricci   CRPP/EPFL
+-
+&BASIC
+  job_time=9994400.0, extra_time=60.0, ! gives the clock time for the job
+  nrun=1000, ! total number of steps 
+  tmax=100000000, ! maximum number of timesteps
+  nlres=.FALSE., ! restart flag
+/
+&fields_in
+  Bratio=0.0 ! ratio of vertical magnetic field to toroidal field 
+  Rcurv=10. ! radius of curvature for your SMT in decimeters
+  Efield_type='GBS' ! electric field option: see Efieldfind.f90
+  avgpotefile='/scratch/abovet/gbs_results/source0p9/verylong/avgS0p9vrlng'! for use with GBS_factor, to define an equilibrium potential from Paolo's turbulence, averaged in vertical coordinate and in time
+  GBSfile ='/home/rotilio/results.h5' ! time-dependent 2D turbulent electrostatic potential
+  GBS_factor = 1.0 ! define the amplitude of the turbulence, a posteriori
+  strmfstart = 1000 ! starting time for turbulence in units of snapshots in GBSfile
+  static_field = .FALSE. ! option to remove time-dependence from GBSfile by using only one snapshot
+  Bfield_type = 'torpex' ! option for slab, torus (no gradB) or torpex
+  B_t=0.9737 ! toroidal field in units of 0.076 T
+  fieldtimestep = 5 ! turbulence timestep in terms of fast ion timesteps
+  interpolate_type='bicubic' ! spatial interpolation (while temporal interpolation is linear)
+  periodic_field=.TRUE. ! periodicity in the vertical direction
+  deltarmod= 4. ! periodicity in radial direction in decimeters - keep equal to Lr
+  deltarmod0 = 8. ! periodic boundary in radial direction in decimeters - keep equal to radial coordinate of inner wall in decimeters
+  deltazmod=1.408 ! vertical field line return distance in decimeters: \Delta
+  deltazmod0 = -0.704 ! vertical coordinate of the origin of the field line
+  rmin = -9999. ! effectively avoids recycling radial boundary if |rmin| >> deltarmod0
+  rmax =  9999. ! avoid recycling boundary conditions
+  radialbc = 'recycle' ! ignore if |rmin| >> deltarmod0 and rmax >> deltarmod0 
+  numrpts = 375 ! radial resolution of the turbulence simulation
+  numzpts = 128 ! vertical resolution of the turbulence simulation
+  Lr = 4. ! diameter of the SMT in decimeters
+  Lz = 1.408 ! vertical field line return distance in decimeters
+  stagdist = 10 ! interval between subsets of fast ions, in units of GBS snapshots, to ensure better statistical sampling
+  staglength = 2 ! duration of fast ion simulation in units of GBS snapshots
+  E_basis='tilt' ! should be tilted if Bratio > 0 and the torus is used
+/
+&injection_in
+  inject_type_pos='pointlike' ! fast ion beam can be 'pointlike' or a spot of finite size, either 'gaussian' or 'uniform'
+  inject_coord_cart=.TRUE. ! initialize beam in Cartesian coordinates (x,y,z) - this is the only option for now (20 July 2011)
+  inject_type_vel='alphabeta' ! 'stationary' and 'alphabeta' for specifying angles are the only options
+  tracerdtfactor = 0.01 ! multiplied on dt, to give the timestep size
+  ZCM_injection=0. ! center of initial beam spot in decimeters relative to center of torus
+  Zwidth_injection=0. ! standard deviation of the 'gaussian' or length of the side of the 'uniform' cube
+  XCM_injection=10.8 ! center of initial beam spot in decimeters relative to center of torus
+  Xwidth_injection=0.0! standard deviation of the 'gaussian' or length of the side of the 'uniform' cube
+  YCM_injection=0.0 ! center of initial beam spot in decimeters relative to center of torus
+  Ywidth_injection=0.! standard deviation of the 'gaussian' or length of the side of the 'uniform' cube
+  V0=0.5477 ! mean of the Gaussian distribution of speeds E = mV0^2/2, where E is mean bean energy
+  alpha0 = -0.1 ! upward angle of the beam center relative to the horizontal plane in radians
+  beta0 =  0.1 ! outward angle of the beam center relative to the y-axis in radians
+  devV = 0.1 ! standard deviation of the speed 
+  devalpha = 0.1 ! standard deviation of alpha angle for the beam
+  devbeta = 0.1 ! standard deviation of beta angle for the beam
+  stagpart = 10 ! number of ions in each subset, staggered/separated relative to GBS snapshots
+  stagbin = 10 ! number of subsets, staggered relative to GBS snapshots
+  rand_seed = .TRUE. ! initialize all bins with different 'random' numbers
+  all_bins_same_pot = .FALSE. ! Do all bins move in the same pertubation?
+/
+&diagnose_in
+ nsave_1d=5 ! frequency at which to write out tracer ion positions
+ save_cart=.FALSE. ! choose whether or not to save ion positions in Cartesian coordinates
+ save_cyl=.FALSE.  ! choose whether or not to save ion positions in cylindrical coordinates
+ save_tilt=.FALSE. ! choose whether or not to save ion positions in tilted (field-line following) coordinates
+ energy_diag=.TRUE. ! choose energy diagnostic (kinetic and potential energy) output
+ save_Efield=.FALSE. ! choose electric field output
+/
+&numerics_in
+ ODE_solver='rk4_3d' ! choose between 'boris' and Runge-Kutta 4th order 'rk4_3d'
+/
+

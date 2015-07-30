@@ -1,0 +1,30 @@
+#!/bin/sh
+#! walltime is the time that pleiades2 will allocate for the job
+#PBS -l walltime=00:10:00 
+#! for serial version of fastpart, only use 1 node and 1 ppn
+#PBS -l nodes=1:ppn=1
+#!
+#PBS -me
+#! send email messages concerning this job to this address 
+#PBS -M kyle.gustafson@epfl.ch
+
+#! name of the executable
+exec=fastpart
+
+#! working directory on pleiades batch
+WK=/spare/$USER/$(basename $PBS_O_WORKDIR).$PBS_JOBID
+#! make the directory
+mkdir -p $WK
+cp -p $PBS_O_WORKDIR/* $WK/
+cd $WK
+
+#mpiexec -kill $exec
+#! executable takes input file and makes output file
+./$exec < in.bovets1_T150B > out.bovets1_T150B
+
+#! create the chosen directory "" through ssh 
+ssh crpppc181.epfl.ch "mkdir /misc/fastpart/tests/diagnostics/bovet/source1/T150/B/$(basename $PBS_O_WORKDIR).$PBS_JOBID"
+#! move the files from the pleiades2 directory to your local machine
+scp * crpppc181.epfl.ch:/misc/fastpart/tests/diagnostics/bovet/source1/T150/B/$(basename $PBS_O_WORKDIR).$PBS_JOBID/.
+#! also could choose to use rsync instead of scp
+rsync -av . $PBS_O_WORKDIR/
