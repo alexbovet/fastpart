@@ -1,5 +1,5 @@
 # fastpart
-Particle solver that solve tracer trajectories in electrostatic plasma turbulence
+Particle solver that solve tracer trajectories in electrostatic plasma turbulence, see the following for more details.
 
 - Gustafson, K., Ricci, P., Furno, I., & Fasoli, A. (2012). Nondiffusive Suprathermal Ion Transport in Simple Magnetized Toroidal Plasmas. Physical Review Letters, 108(3), 1–5. http://doi.org/10.1103/PhysRevLett.108.035006
 
